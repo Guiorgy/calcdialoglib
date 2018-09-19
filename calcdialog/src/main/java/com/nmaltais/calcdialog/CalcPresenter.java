@@ -72,8 +72,8 @@ public class CalcPresenter {
 
             // Init values
             if (settings.initialValue != null) {
-                resultValue = settings.initialValue.setScale(settings.maxFracDigits, settings.roundingMode);
-                resultValue = CalcDialogUtils.stripTrailingZeroes(resultValue);
+                resultValue = CalcDialogUtils.stripTrailingZeroes(settings.initialValue
+                        .setScale(settings.maxFracDigits, settings.roundingMode));
                 answerValue = resultValue;
 
                 valueStr = new StringBuilder(resultValue.toPlainString());
@@ -152,7 +152,8 @@ public class CalcPresenter {
                     if (last == settings.decimalSep || last == '-') {
                         valueStr.deleteCharAt(valueStr.length() - 1);
 
-                        if(valueStr.toString().equals("-0")){
+                        if (valueStr.toString().equals("-0")) {
+                            // Don't allow negative 0
                             valueStr.deleteCharAt(0);
                         }
                     }
@@ -184,26 +185,21 @@ public class CalcPresenter {
 
         // Check if max digits has been exceeded
         int pointPos = valueStr.indexOf(String.valueOf(settings.decimalSep));
-        if ((pointPos != -1 || settings.maxIntDigits == CalcDialog.MAX_DIGITS_UNLIMITED
-                || valueStr.length() < settings.maxIntDigits) && (pointPos == -1
-                || settings.maxFracDigits == CalcDialog.MAX_DIGITS_UNLIMITED
-                || valueStr.length() - pointPos - 1 < settings.maxFracDigits)) {
+        boolean withinMaxInt = (pointPos == -1 && (settings.maxIntDigits == CalcDialog.MAX_DIGITS_UNLIMITED
+                || valueStr.length() < settings.maxIntDigits));
+        boolean withinMaxFrac = (pointPos != -1
+                && (settings.maxFracDigits == CalcDialog.MAX_DIGITS_UNLIMITED
+                || valueStr.length() - pointPos - 1 < settings.maxFracDigits));
+        boolean isValueZero = (pointPos == -1 && valueStr.length() == 1 && valueStr.charAt(0) == '0');
+
+        if ((withinMaxInt || withinMaxFrac) && (!isValueZero || digit != 0))  {
             // If max int or max frac digits have not already been reached
-
-            boolean canAppend = true;
-
-            if(valueStr.length() != 0 && valueStr.indexOf(settings.decimalSep+"") == -1 && Integer.parseInt(valueStr.toString()) == 0){
-                if(digit == 0){
-                    canAppend = false;
-                } else{
-                    valueStr.setLength(0);
-                }
+            // Concatenate current value with new digit
+            if (isValueZero) {
+                // If current value is zero, clear it before adding new digit
+                valueStr.setLength(0);
             }
-
-            if(canAppend){
-                // Concatenate current value with new digit
-                valueStr.append(digit);
-            }
+            valueStr.append(digit);
         }
 
         formatValue();
@@ -397,8 +393,8 @@ public class CalcPresenter {
             return;
         }
 
-        resultValue = resultValue.setScale(settings.maxFracDigits, settings.roundingMode);
-        resultValue = CalcDialogUtils.stripTrailingZeroes(resultValue);
+        resultValue = CalcDialogUtils.stripTrailingZeroes(
+                resultValue.setScale(settings.maxFracDigits, settings.roundingMode));
 
         // Display formatted result
         valueStr = new StringBuilder(resultValue.toPlainString());
@@ -468,7 +464,6 @@ public class CalcPresenter {
             return new BigDecimal(valueStr.toString());
         }
     }
-
 
 
     /**
