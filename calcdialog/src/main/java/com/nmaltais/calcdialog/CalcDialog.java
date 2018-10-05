@@ -24,6 +24,8 @@ package com.nmaltais.calcdialog;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
@@ -42,6 +44,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -164,6 +167,17 @@ public class CalcDialog extends AppCompatDialogFragment {
 
         // Value display
         displayTxv = view.findViewById(R.id.calc_txv_value);
+        displayTxv.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(final View v){
+                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("calc result", displayTxv.getText());
+                assert clipboard != null;
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(context, clip.getItemAt(0).getText() + " has been copied to clipboard", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
 
         // Erase button
         CalcEraseButton eraseBtn = view.findViewById(R.id.calc_btn_erase);
