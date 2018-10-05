@@ -21,6 +21,8 @@
         <attr name="calcEraseBtnStyle" format="reference"/>
         <attr name="calcDialogSepColor" format="color|reference"/>
         <attr name="calcDialogButtonStyle" format="reference"/>
+        <attr name="calcModeBtnStyle" format="reference"/>
+        <attr name="calcModeBtnColor" format="color|reference"/>
         <attr name="calcErrors" format="reference"/>
     </declare-styleable>
 

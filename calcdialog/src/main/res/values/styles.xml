@@ -20,6 +20,8 @@
         <item name="calcEraseBtnStyle">@style/CalcEraseBtnStyle</item>
         <item name="calcDialogSepColor">@color/calc_grey_500</item>
         <item name="calcDialogButtonStyle">@style/CalcDialogButtonStyle</item>
+        <item name="calcModeBtnStyle">@style/CalcModeBtnStyle</item>
+        <item name="calcModeBtnColor">@android:color/transparent</item>
         <item name="calcErrors">@array/calc_dialog_errors</item>
     </style>
 
@@ -69,6 +71,14 @@
         <item name="tint">?android:attr/textColorSecondary</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
+    </style>
+
+    <public name="CalcModeBtnStyle" type="style"/>
+    <style name="CalcModeBtnStyle">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Caption</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <public name="CalcDialogButtonStyle" type="style"/>
