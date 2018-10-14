@@ -21,7 +21,7 @@ public class CalcPresenter {
     private static final int ERROR_WRONG_SIGN_POS = 2;
     private static final int ERROR_WRONG_SIGN_NEG = 3;
 
-    private CalcDialog view;
+    private CalcDialogStandard view;
 
     private CalcSettings settings;
 
@@ -37,7 +37,9 @@ public class CalcPresenter {
 
     private String zeroString;
 
-    void attach(CalcDialog v, Bundle state) {
+    CalcPresenter(){}
+
+    void attach(CalcDialogStandard v, Bundle state) {
         view = v;
 
         settings = view.getSettings();

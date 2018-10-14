@@ -26,8 +26,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/calcBackgroundColor"
     tools:theme="@style/CalcDialogStyle"
+    android:theme="@style/CalcDialogStyle"
+    android:background="?attr/calcBackgroundColor"
     >
 
     <LinearLayout

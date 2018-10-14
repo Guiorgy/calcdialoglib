@@ -3,53 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:background="?attr/calcBackgroundColor"
     tools:theme="@style/CalcDialogStyle"
     android:id="@+id/calc_root"
     >
 
-    <LinearLayout
-        android:id="@+id/calc_menu"
+    <com.nmaltais.calcdialog.CalcDialogViewPager
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:background="?attr/calcBackgroundColor"
-        tools:theme="@style/CalcDialogStyle"
+        android:id="@+id/calc_viewpager"
         >
 
-        <RadioGroup
-            android:id="@+id/calc_mode"
+        <android.support.v4.view.PagerTabStrip
+            android:id="@+id/calc_viewpager_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            >
+            android:layout_gravity="top"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp"
+            />
 
-            <android.support.v7.widget.AppCompatRadioButton
-                android:id="@+id/calc_mode_standard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="?attr/calcModeBtnStyle"
-                android:text="Standard"
-                android:checked="true"
-                />
-
-            <android.support.v7.widget.AppCompatRadioButton
-                android:id="@+id/calc_mode_scientific"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="?attr/calcModeBtnStyle"
-                android:text="Scientific"
-                android:checked="true"
-                />
-
-        </RadioGroup>
-
-    </LinearLayout>
-
-    <fragment
-        android:id="@+id/calc"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/dialog_calc_standard"/>
+    </com.nmaltais.calcdialog.CalcDialogViewPager>
 
 </LinearLayout>

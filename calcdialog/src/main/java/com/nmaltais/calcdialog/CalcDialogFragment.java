@@ -1,60 +1,25 @@
-/*
- * Copyright (c) 2018 Nicolas Maltais
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 package com.nmaltais.calcdialog;
 
-
-import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatDialogFragment;
-import android.util.DisplayMetrics;
+import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.TextView;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
-
-/**
- * Dialog with calculator for entering and calculating a number
- */
-@SuppressWarnings("unused")
-public class CalcDialog extends AppCompatDialogFragment {
-
-    private static final String TAG = CalcDialog.class.getSimpleName();
+abstract class CalcDialogFragment extends Fragment {
+    private static final String TAG = CalcDialogFragment.class.getSimpleName();
 
     /**
      * Parameter value to set for {@link #setMaxDigits(int, int)}
@@ -69,7 +34,7 @@ public class CalcDialog extends AppCompatDialogFragment {
      */
     public static final char FORMAT_CHAR_DEFAULT = 0;
 
-    private static final int[] DIGIT_BTN_IDS = {
+    protected static final int[] DIGIT_BTN_IDS = {
             R.id.calc_btn_0,
             R.id.calc_btn_1,
             R.id.calc_btn_2,
@@ -82,39 +47,41 @@ public class CalcDialog extends AppCompatDialogFragment {
             R.id.calc_btn_9,
     };
 
-    private static final int[] OPERATOR_BTN_IDS = {
+    protected static final int[] OPERATOR_BTN_IDS = {
             R.id.calc_btn_add,
             R.id.calc_btn_sub,
             R.id.calc_btn_mult,
             R.id.calc_btn_div,
     };
 
-    private Context context;
-    private CalcPresenter presenter;
+    protected Context context;
+    protected CalcPresenter presenter;
 
-    private CalcSettings settings;
+    protected CalcSettings settings;
 
-    private List<CalcDialogFragment> fragments;
-    private ViewPager viewPager;
-    private CalcDialogAdapter adapter;
-    private View calcDialog;
+    protected TextView displayTxv;
+    protected TextView decimalSepBtn;
+    protected TextView equalBtn;
+    protected TextView answerBtn;
+    protected TextView signBtn;
 
-    private TextView displayTxv;
-    private TextView decimalSepBtn;
-    private TextView equalBtn;
-    private TextView answerBtn;
-    private TextView signBtn;
+    protected CharSequence[] btnTexts;
+    protected CharSequence[] errorMessages;
+    protected int[] maxDialogDimensions;
 
-    private CharSequence[] btnTexts;
-    private CharSequence[] errorMessages;
-    private int[] maxDialogDimensions;
+    @NonNull
+    public abstract String getTitle();
 
     /**
      * Do not use the constructor directly for creating
      * an instance, use {@link #newInstance(int)} instead
      */
-    public CalcDialog() {
+    protected CalcDialogFragment() {
         settings = new CalcSettings();
+    }
+
+    protected void instantiate(int requestCode){
+        this.settings.requestCode = requestCode;
     }
 
     /**
@@ -123,10 +90,8 @@ public class CalcDialog extends AppCompatDialogFragment {
      *                    Useful in case there's multiple dialogs at the same time
      * @return the dialog
      */
-    public static CalcDialog newInstance(int requestCode) {
-        CalcDialog dialog = new CalcDialog();
-        dialog.settings.requestCode = requestCode;
-        return dialog;
+    public static CalcDialogFragment newInstance(int requestCode){
+        return null;
     }
 
     ////////// LIFECYCLE METHODS //////////
@@ -156,70 +121,12 @@ public class CalcDialog extends AppCompatDialogFragment {
         ta.recycle();
     }
 
-    @SuppressLint("InflateParams")
-    @Override
-    public @NonNull Dialog onCreateDialog(final Bundle state) {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        calcDialog = calcDialog != null ? calcDialog : inflater.inflate(R.layout.dialog_calc, null);
-
-        viewPager = calcDialog.findViewById(R.id.calc_viewpager);
-
-        // Set up dialog
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @SuppressWarnings("ConstantConditions")
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                // Get maximum dialog dimensions
-                Rect fgPadding = new Rect();
-                dialog.getWindow().getDecorView().getBackground().getPadding(fgPadding);
-                DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-                int height = metrics.heightPixels - fgPadding.top - fgPadding.bottom;
-                int width = metrics.widthPixels - fgPadding.top - fgPadding.bottom;
-
-                // Set dialog's dimensions
-                if (width > maxDialogDimensions[0]) width = maxDialogDimensions[0];
-                if (height > maxDialogDimensions[1]) height = maxDialogDimensions[1];
-                dialog.getWindow().setLayout(width, height);
-
-                // Set dialog's content
-                calcDialog.setLayoutParams(new ViewGroup.LayoutParams(width, height));
-                dialog.setContentView(calcDialog);
-
-                // Presenter
-                presenter = new CalcPresenter();
-                //presenter.attach(CalcDialog.this, state);
-            }
-        });
-
-        if (state != null) {
-            settings.readFromBundle(state);
-            displayTxv.setText(state.getString("displayText"));
-        }
-
-        return dialog;
-    }
-
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        calcDialog = calcDialog != null ? calcDialog : inflater.inflate(R.layout.dialog_calc, null);
+    public abstract View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup root, @Nullable Bundle state);
 
-        fragments = new ArrayList<CalcDialogFragment>(){{
-            add(CalcDialogStandard.newInstance(0));
-            add(CalcDialogStandard.newInstance(1));
-        }};
-        adapter = new CalcDialogAdapter(getChildFragmentManager());
-        adapter.setFragments(fragments);
-        viewPager.setAdapter(adapter);
-
-        return calcDialog;
-    }
-
-    @Override
     public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
+        //super.onDismiss(dialog);
         if (presenter != null) {
             // On config change, presenter is detached before this is called
             presenter.onDismissed();
@@ -227,7 +134,7 @@ public class CalcDialog extends AppCompatDialogFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle state) {
+    public void onSaveInstanceState(@NonNull Bundle state) {
         super.onSaveInstanceState(state);
         presenter.writeStateToBundle(state);
         settings.writeToBundle(state);
@@ -245,7 +152,7 @@ public class CalcDialog extends AppCompatDialogFragment {
     }
 
     @Nullable
-    private CalcDialogCallback getCallback() {
+    public CalcDialogCallback getCallback() {
         CalcDialogCallback cb = null;
         if (getParentFragment() != null) {
             try {
@@ -262,7 +169,7 @@ public class CalcDialog extends AppCompatDialogFragment {
         } else {
             // Caller was an activity
             try {
-                cb = (CalcDialog.CalcDialogCallback) requireActivity();
+                cb = (CalcDialogCallback) requireActivity();
             } catch (Exception e) {
                 // Interface callback is not implemented in activity
             }
@@ -271,50 +178,48 @@ public class CalcDialog extends AppCompatDialogFragment {
     }
 
     ////////// VIEW METHODS //////////
-    CalcSettings getSettings() {
+    public CalcSettings getSettings() {
         return settings;
     }
 
-    Locale getDefaultLocale() {
+    public Locale getDefaultLocale() {
         return CalcDialogUtils.getDefaultLocale(context);
     }
 
-    void exit() {
-        dismissAllowingStateLoss();
-    }
+    public abstract void exit();
 
-    void sendValueResult(BigDecimal value) {
+    public void sendValueResult(BigDecimal value) {
         CalcDialogCallback cb = getCallback();
         if (cb != null) {
             cb.onValueEntered(settings.requestCode, value);
         }
     }
 
-    void setAnswerBtnVisible(boolean visible) {
+    public void setAnswerBtnVisible(boolean visible) {
         answerBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    void setEqualBtnVisible(boolean visible) {
+    public void setEqualBtnVisible(boolean visible) {
         equalBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    void setSignBtnVisible(boolean visible) {
+    public void setSignBtnVisible(boolean visible) {
         signBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    void setDecimalSepBtnEnabled(boolean enabled) {
+    public void setDecimalSepBtnEnabled(boolean enabled) {
         decimalSepBtn.setEnabled(enabled);
     }
 
-    void displayValueText(String text) {
+    public void displayValueText(String text) {
         displayTxv.setText(text);
     }
 
-    void displayErrorText(int error) {
+    public void displayErrorText(int error) {
         displayTxv.setText(errorMessages[error]);
     }
 
-    void displayAnswerText() {
+    public void displayAnswerText() {
         displayTxv.setText(R.string.calc_answer);
     }
 
@@ -326,7 +231,7 @@ public class CalcDialog extends AppCompatDialogFragment {
      * @param value Initial value to display. Setting null will result in 0
      * @return the dialog
      */
-    public CalcDialog setValue(@Nullable BigDecimal value) {
+    public CalcDialogFragment setValue(@Nullable BigDecimal value) {
         settings.setValue(value);
         return this;
     }
@@ -339,7 +244,7 @@ public class CalcDialog extends AppCompatDialogFragment {
      * @param maxValue Maximum value, use null for no maximum
      * @return the dialog
      */
-    public CalcDialog setMaxValue(@Nullable BigDecimal maxValue) {
+    public CalcDialogFragment setMaxValue(@Nullable BigDecimal maxValue) {
         settings.setMaxValue(maxValue);
         return this;
     }
@@ -352,7 +257,7 @@ public class CalcDialog extends AppCompatDialogFragment {
      *                 A value of 0 means the value can't have a fractional part
      * @return the dialog
      */
-    public CalcDialog setMaxDigits(int intPart, int fracPart) {
+    public CalcDialogFragment setMaxDigits(int intPart, int fracPart) {
         settings.setMaxDigits(intPart, fracPart);
         return this;
     }
@@ -364,7 +269,7 @@ public class CalcDialog extends AppCompatDialogFragment {
      * @param roundingMode one of {@link RoundingMode}, except {@link RoundingMode#UNNECESSARY}
      * @return the dialog
      */
-    public CalcDialog setRoundingMode(RoundingMode roundingMode) {
+    public CalcDialogFragment setRoundingMode(RoundingMode roundingMode) {
         settings.setRoundingMode(roundingMode);
         return this;
     }
@@ -379,7 +284,7 @@ public class CalcDialog extends AppCompatDialogFragment {
      *             otherwise use any value
      * @return the dialog
      */
-    public CalcDialog setSignCanBeChanged(boolean canBeChanged, int sign) {
+    public CalcDialogFragment setSignCanBeChanged(boolean canBeChanged, int sign) {
         settings.setSignCanBeChanged(canBeChanged, sign);
         return this;
     }
@@ -392,7 +297,7 @@ public class CalcDialog extends AppCompatDialogFragment {
      * @param groupSep grouping separator
      * @return the dialog
      */
-    public CalcDialog setFormatSymbols(char decimalSep, char groupSep) {
+    public CalcDialogFragment setFormatSymbols(char decimalSep, char groupSep) {
         settings.setFormatSymbols(decimalSep, groupSep);
         return this;
     }
@@ -404,7 +309,7 @@ public class CalcDialog extends AppCompatDialogFragment {
      * @param clear whether to clear it or not
      * @return the dialog
      */
-    public CalcDialog setClearDisplayOnOperation(boolean clear) {
+    public CalcDialogFragment setClearDisplayOnOperation(boolean clear) {
         settings.clearOnOperation = clear;
         return this;
     }
@@ -414,7 +319,7 @@ public class CalcDialog extends AppCompatDialogFragment {
      * @param show whether to show it or not
      * @return the dialog
      */
-    public CalcDialog setShowZeroWhenNoValue(boolean show) {
+    public CalcDialogFragment setShowZeroWhenNoValue(boolean show) {
         settings.showZeroWhenNoValue = show;
         return this;
     }
@@ -427,7 +332,7 @@ public class CalcDialog extends AppCompatDialogFragment {
      * @param size grouping size, use 0 for no grouping
      * @return the dialog
      */
-    public CalcDialog setGroupSize(int size) {
+    public CalcDialogFragment setGroupSize(int size) {
         settings.setGroupSize(size);
         return this;
     }
@@ -439,7 +344,7 @@ public class CalcDialog extends AppCompatDialogFragment {
      * @param show whether to show it or not
      * @return the dialog
      */
-    public CalcDialog setShowAnswerButton(boolean show) {
+    public CalcDialogFragment setShowAnswerButton(boolean show) {
         settings.showAnswerBtn = show;
         return this;
     }
@@ -450,12 +355,12 @@ public class CalcDialog extends AppCompatDialogFragment {
      * @param show whether to show it or not
      * @return the dialog
      */
-    public CalcDialog setShowSignButton(boolean show) {
+    public CalcDialogFragment setShowSignButton(boolean show) {
         settings.showSignBtn = show;
         return this;
     }
 
-    public interface CalcDialogCallback {
+    public interface CalcDialogCallback{
         /**
          * Called when the dialog's OK button is clicked
          * @param value value entered.
