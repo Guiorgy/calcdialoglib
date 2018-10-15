@@ -21,7 +21,6 @@
 
 package com.nmaltais.calcdialog;
 
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
@@ -31,7 +30,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
@@ -47,11 +45,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-
 /**
  * Dialog with calculator for entering and calculating a number
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "RedundantCast"})
 public class CalcDialog extends AppCompatDialogFragment {
 
     private static final String TAG = CalcDialog.class.getSimpleName();
@@ -95,7 +92,7 @@ public class CalcDialog extends AppCompatDialogFragment {
     private CalcSettings settings;
 
     private List<CalcDialogFragment> fragments;
-    private ViewPager viewPager;
+    private CalcDialogViewPager viewPager;
     private CalcDialogAdapter adapter;
     private View calcDialog;
 
@@ -162,7 +159,7 @@ public class CalcDialog extends AppCompatDialogFragment {
         LayoutInflater inflater = LayoutInflater.from(context);
         calcDialog = calcDialog != null ? calcDialog : inflater.inflate(R.layout.dialog_calc, null);
 
-        viewPager = calcDialog.findViewById(R.id.calc_viewpager);
+        viewPager = (CalcDialogViewPager) calcDialog.findViewById(R.id.calc_viewpager);
 
         // Set up dialog
         final Dialog dialog = new Dialog(context);
@@ -204,7 +201,7 @@ public class CalcDialog extends AppCompatDialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        calcDialog = calcDialog != null ? calcDialog : inflater.inflate(R.layout.dialog_calc, null);
+        calcDialog = calcDialog != null ? calcDialog : inflater.inflate(R.layout.dialog_calc, container, false);
 
         fragments = new ArrayList<CalcDialogFragment>(){{
             add(CalcDialogStandard.newInstance(0));
@@ -217,14 +214,14 @@ public class CalcDialog extends AppCompatDialogFragment {
         return calcDialog;
     }
 
-    @Override
+    /*@Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
         if (presenter != null) {
             // On config change, presenter is detached before this is called
             presenter.onDismissed();
         }
-    }
+    }*/
 
     @Override
     public void onSaveInstanceState(Bundle state) {
@@ -238,10 +235,11 @@ public class CalcDialog extends AppCompatDialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        presenter.detach();
+        /*presenter.detach();
 
-        presenter = null;
+        presenter = null;*/
         context = null;
+        calcDialog = null;
     }
 
     @Nullable

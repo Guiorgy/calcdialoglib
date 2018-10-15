@@ -10,24 +10,42 @@ import android.widget.Scroller;
 import java.lang.reflect.Field;
 
 class CalcDialogViewPager extends ViewPager {
+    private boolean allowSwipe = false;
 
-    CalcDialogViewPager(Context context) {
+    public CalcDialogViewPager(Context context) {
         super(context);
+        setNoScroller();
     }
 
-    CalcDialogViewPager(Context context, AttributeSet attrs) {
+    public CalcDialogViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setNoScroller();
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
+        if(allowSwipe){
+            return super.onInterceptTouchEvent(event);
+        }
         // stop swipe
+        setCurrentItem(getCurrentItem());
         return false;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(allowSwipe){
+            return super.onTouchEvent(event);
+        }
         // stop switching pages
+        setCurrentItem(getCurrentItem());
+        return false;
+    }
+
+    @Override
+    public boolean arrowScroll(final int direction){
+        setCurrentItem(getCurrentItem());
+        // stop Dpad swiping
         return false;
     }
 
@@ -42,7 +60,7 @@ class CalcDialogViewPager extends ViewPager {
         }
     }
 
-    class NoScroller extends Scroller {
+    private class NoScroller extends Scroller {
         NoScroller(Context context) {
             super(context, new DecelerateInterpolator());
         }
@@ -51,5 +69,13 @@ class CalcDialogViewPager extends ViewPager {
         public void startScroll(int startX, int startY, int dx, int dy, int duration) {
             super.startScroll(startX, startY, dx, dy, 350 /*1 secs*/);
         }
+    }
+
+    public boolean isSwipeAllowed(){
+        return allowSwipe;
+    }
+
+    public void setAllowSwipe(final boolean allowSwipe){
+        this.allowSwipe = allowSwipe;
     }
 }

@@ -21,7 +21,7 @@ public class CalcPresenter {
     private static final int ERROR_WRONG_SIGN_POS = 2;
     private static final int ERROR_WRONG_SIGN_NEG = 3;
 
-    private CalcDialogStandard view;
+    private CalcDialogStandard fragment;
 
     private CalcSettings settings;
 
@@ -39,13 +39,13 @@ public class CalcPresenter {
 
     CalcPresenter(){}
 
-    void attach(CalcDialogStandard v, Bundle state) {
-        view = v;
+    void attach(CalcDialogStandard fragment, Bundle state) {
+        this.fragment = fragment;
 
-        settings = view.getSettings();
+        settings = fragment.getSettings();
 
         // Get locale's symbols for number formatting
-        Locale locale = view.getDefaultLocale();
+        Locale locale = fragment.getDefaultLocale();
         DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(locale);
         if (settings.decimalSep == CalcDialog.FORMAT_CHAR_DEFAULT) {
             settings.decimalSep = dfs.getDecimalSeparator();
@@ -85,19 +85,19 @@ public class CalcPresenter {
             }
             formatValue();
 
-            view.displayValueText(valueStr.toString());
+            fragment.displayValueText(valueStr.toString());
 
         } else {
             readStateFromBundle(state);
         }
 
-        view.setDecimalSepBtnEnabled(settings.maxFracDigits > 0);
+        fragment.setDecimalSepBtnEnabled(settings.maxFracDigits > 0);
         setAnswerBtnVisible(settings.showAnswerBtn && answerValue != null);
-        view.setSignBtnVisible(settings.showSignBtn);
+        fragment.setSignBtnVisible(settings.showSignBtn);
     }
 
     void detach() {
-        view = null;
+        fragment = null;
     }
 
     void writeStateToBundle(Bundle bundle) {
@@ -163,7 +163,7 @@ public class CalcPresenter {
             }
 
             formatValue();
-            view.displayValueText(valueStr.toString());
+            fragment.displayValueText(valueStr.toString());
             resultIsDisplayed = false;
         }
     }
@@ -205,7 +205,7 @@ public class CalcPresenter {
         }
 
         formatValue();
-        view.displayValueText(valueStr.toString());
+        fragment.displayValueText(valueStr.toString());
         resultIsDisplayed = false;
     }
 
@@ -229,7 +229,7 @@ public class CalcPresenter {
         if (settings.clearOnOperation) {
             valueStr = new StringBuilder();
             formatValue();
-            view.displayValueText(valueStr.toString());
+            fragment.displayValueText(valueStr.toString());
             resultIsDisplayed = false;
         }
 
@@ -256,7 +256,7 @@ public class CalcPresenter {
 
             valueStr.append(settings.decimalSep);
 
-            view.displayValueText(valueStr.toString());
+            fragment.displayValueText(valueStr.toString());
             resultIsDisplayed = false;
         }
     }
@@ -281,7 +281,7 @@ public class CalcPresenter {
                 answerValue = answerValue.negate();
             }
 
-            view.displayValueText(valueStr.toString());
+            fragment.displayValueText(valueStr.toString());
             resultIsDisplayed = false;
         }
     }
@@ -295,7 +295,7 @@ public class CalcPresenter {
 
     void onAnswerBtnClicked() {
         setAnswerBtnVisible(false);
-        view.displayAnswerText();
+        fragment.displayAnswerText();
 
         currentIsAnswer = true;
         resultIsDisplayed = false;
@@ -306,7 +306,7 @@ public class CalcPresenter {
     }
 
     void onCancelBtnClicked() {
-        view.exit();
+        fragment.exit();
     }
 
     void onOkBtnClicked() {
@@ -330,8 +330,8 @@ public class CalcPresenter {
                 }
             }
 
-            view.sendValueResult(resultValue);
-            view.exit();
+            fragment.sendValueResult(resultValue);
+            fragment.exit();
         }
     }
 
@@ -401,7 +401,7 @@ public class CalcPresenter {
         // Display formatted result
         valueStr = new StringBuilder(resultValue.toPlainString());
         formatValue();
-        view.displayValueText(valueStr.toString());
+        fragment.displayValueText(valueStr.toString());
         resultIsDisplayed = true;
 
         operation = OPERATION_NONE;
@@ -413,7 +413,7 @@ public class CalcPresenter {
      */
     private void setError(int error) {
         this.error = error;
-        view.displayErrorText(error);
+        fragment.displayErrorText(error);
 
         reset();
     }
@@ -425,7 +425,7 @@ public class CalcPresenter {
     private boolean dismissError() {
         if (error != ERROR_NONE) {
             error = ERROR_NONE;
-            view.displayValueText(valueStr.toString());
+            fragment.displayValueText(valueStr.toString());
             resultIsDisplayed = false;
             return true;
         }
@@ -443,7 +443,7 @@ public class CalcPresenter {
 
         reset();
 
-        view.displayValueText(valueStr.toString());
+        fragment.displayValueText(valueStr.toString());
         resultIsDisplayed = false;
     }
 
@@ -515,8 +515,8 @@ public class CalcPresenter {
     }
 
     private void setAnswerBtnVisible(boolean visible) {
-        view.setAnswerBtnVisible(visible);
-        view.setEqualBtnVisible(!visible);
+        fragment.setAnswerBtnVisible(visible);
+        fragment.setEqualBtnVisible(!visible);
     }
 
 }
