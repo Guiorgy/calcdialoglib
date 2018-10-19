@@ -7,8 +7,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-public class CalcPresenter {
-
+abstract class CalcPresenter{
     private static final int OPERATION_NONE = -1;
     private static final int OPERATION_ADD = 0;
     private static final int OPERATION_SUB = 1;
@@ -28,7 +27,8 @@ public class CalcPresenter {
     private int operation;
     private int error;
     private StringBuilder valueStr;
-    private @Nullable BigDecimal resultValue;
+    private @Nullable
+    BigDecimal resultValue;
     private boolean resultIsDisplayed;
     private boolean overwriteValue;
 

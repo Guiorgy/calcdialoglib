@@ -31,9 +31,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Locale;
-
-
 /**
  * Fragment (Support) with calculator for entering and calculating a number
  */
@@ -46,9 +43,10 @@ public class CalcDialogStandard extends CalcDialogFragment {
         return "Standard";
     }
 
-    public static CalcDialogStandard newInstance(int requestCode){
+    public static CalcDialogStandard newInstance(CalcDialog calcDialog, int requestCode){
         CalcDialogStandard fragment = new CalcDialogStandard();
         fragment.instantiate(requestCode);
+        fragment.calcDialog = calcDialog;
         return fragment;
     }
 
@@ -130,7 +128,7 @@ public class CalcDialogStandard extends CalcDialogFragment {
         });
 
         // Presenter
-        presenter = new CalcPresenter();
+        presenter = new CalcPresenterStandard();
         presenter.attach(CalcDialogStandard.this, state);
 
         if (state != null) {
@@ -139,19 +137,5 @@ public class CalcDialogStandard extends CalcDialogFragment {
         }
 
         return view;
-    }
-
-    ////////// VIEW METHODS //////////
-    public CalcSettings getSettings() {
-        return settings;
-    }
-
-    public Locale getDefaultLocale() {
-        return CalcDialogUtils.getDefaultLocale(context);
-    }
-
-    @Override
-    public void exit() {
-        //dismissAllowingStateLoss();
     }
 }

@@ -61,18 +61,17 @@ public class CalcDialog extends AppCompatDialogFragment {
     private static final String TAG = CalcDialog.class.getSimpleName();
 
     private Context context;
-    private CalcPresenter presenter;
 
     private CalcSettings settings;
 
-    protected TextView displayTxv;
+    private TextView displayTxv;
 
     private List<CalcDialogFragment> fragments;
     private CalcDialogViewPager viewPager;
     private CalcDialogAdapter adapter;
     private View calcDialog;
 
-    protected CharSequence[] errorMessages;
+    private CharSequence[] errorMessages;
     private int[] maxDialogDimensions;
 
     /**
@@ -153,12 +152,12 @@ public class CalcDialog extends AppCompatDialogFragment {
         eraseBtn.setOnEraseListener(new CalcEraseButton.EraseListener() {
             @Override
             public void onErase() {
-                presenter.onErasedOnce();
+                getPresenter().onErasedOnce();
             }
 
             @Override
             public void onEraseAll() {
-                presenter.onErasedAll();
+                getPresenter().onErasedAll();
             }
         });
 
@@ -167,7 +166,7 @@ public class CalcDialog extends AppCompatDialogFragment {
         clearBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.onClearBtnClicked();
+                getPresenter().onClearBtnClicked();
             }
         });
 
@@ -175,7 +174,7 @@ public class CalcDialog extends AppCompatDialogFragment {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.onCancelBtnClicked();
+                getPresenter().onCancelBtnClicked();
             }
         });
 
@@ -183,7 +182,7 @@ public class CalcDialog extends AppCompatDialogFragment {
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.onOkBtnClicked();
+                getPresenter().onOkBtnClicked();
             }
         });
 
@@ -211,7 +210,7 @@ public class CalcDialog extends AppCompatDialogFragment {
                 dialog.setContentView(calcDialog);
 
                 // Presenter
-                presenter = new CalcPresenter();
+                //presenter = new CalcPresenterStandard();
                 //presenter.attach(CalcDialog.this, state);
             }
         });
@@ -234,13 +233,12 @@ public class CalcDialog extends AppCompatDialogFragment {
         calcDialog = calcDialog != null ? calcDialog : inflater.inflate(R.layout.dialog_calc, container, false);
 
         fragments = new ArrayList<CalcDialogFragment>(){{
-            add(CalcDialogStandard.newInstance(0));
-            add(CalcDialogStandard.newInstance(1));
+            add(CalcDialogStandard.newInstance(CalcDialog.this, 0));
+            add(CalcDialogStandard.newInstance(CalcDialog.this, 1));
         }};
         adapter = new CalcDialogAdapter(getChildFragmentManager());
         adapter.setFragments(fragments);
         viewPager.setAdapter(adapter);
-
 
         TabLayout tabLayout = (TabLayout) calcDialog.findViewById(R.id.calc_viewpager_tabs);
         tabLayout.setupWithViewPager(viewPager, true);
@@ -248,19 +246,19 @@ public class CalcDialog extends AppCompatDialogFragment {
         return calcDialog;
     }
 
-    /*@Override
+    @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (presenter != null) {
+        if (getPresenter() != null) {
             // On config change, presenter is detached before this is called
-            presenter.onDismissed();
+            getPresenter().onDismissed();
         }
-    }*/
+    }
 
     @Override
     public void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
-        presenter.writeStateToBundle(state);
+        getPresenter().writeStateToBundle(state);
         settings.writeToBundle(state);
 
         state.putString("displayText", displayTxv.getText().toString());
@@ -269,7 +267,7 @@ public class CalcDialog extends AppCompatDialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        /*presenter.detach();
+        /*getPresenter().detach();
 
         presenter = null;*/
         context = null;
@@ -303,14 +301,6 @@ public class CalcDialog extends AppCompatDialogFragment {
     }
 
     ////////// VIEW METHODS //////////
-    CalcSettings getSettings() {
-        return settings;
-    }
-
-    Locale getDefaultLocale() {
-        return CalcDialogUtils.getDefaultLocale(context);
-    }
-
     void exit() {
         dismissAllowingStateLoss();
     }
@@ -332,6 +322,37 @@ public class CalcDialog extends AppCompatDialogFragment {
 
     public void displayAnswerText() {
         displayTxv.setText(R.string.calc_answer);
+    }
+
+    ////////// GETTERS //////////
+    @NonNull
+    @Override
+    public Context getContext(){
+        return context;
+    }
+
+    CalcPresenter getPresenter(){
+        return fragments.get(viewPager.getCurrentItem()).presenter;
+    }
+
+    CalcSettings getSettings() {
+        return settings;
+    }
+
+    Locale getDefaultLocale() {
+        return CalcDialogUtils.getDefaultLocale(context);
+    }
+
+    TextView getDisplayTxv(){
+        return displayTxv;
+    }
+
+    CharSequence[] getErrorMessages(){
+        return errorMessages;
+    }
+
+    int[] getMaxDialogDimensions(){
+        return maxDialogDimensions;
     }
 
     ////////// CALCULATOR SETTINGS //////////

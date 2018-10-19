@@ -1,13 +1,11 @@
 package com.nmaltais.calcdialog;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +51,7 @@ abstract class CalcDialogFragment extends Fragment {
             R.id.calc_btn_div,
     };
 
-    protected Context context;
+    protected CalcDialog calcDialog;
     protected CalcPresenter presenter;
 
     protected CalcSettings settings;
@@ -72,7 +70,7 @@ abstract class CalcDialogFragment extends Fragment {
 
     /**
      * Do not use the constructor directly for creating
-     * an instance, use {@link #newInstance(int)} instead
+     * an instance, use {@link #newInstance(CalcDialog, int)} instead
      */
     protected CalcDialogFragment() {
         settings = new CalcSettings();
@@ -88,28 +86,17 @@ abstract class CalcDialogFragment extends Fragment {
      *                    Useful in case there's multiple dialogs at the same time
      * @return the dialog
      */
-    public static CalcDialogFragment newInstance(int requestCode){
+    public static CalcDialogFragment newInstance(CalcDialog calcDialog, int requestCode){
         return null;
     }
 
     ////////// LIFECYCLE METHODS //////////
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        // Wrap calculator dialog's theme to context
-        TypedArray ta = context.obtainStyledAttributes(new int[]{R.attr.calcDialogStyle});
-        int style = ta.getResourceId(0, R.style.CalcDialogStyle);
-        ta.recycle();
-        this.context = new ContextThemeWrapper(context, style);
-    }
-
-    @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
 
         // Get strings
-        TypedArray ta = context.obtainStyledAttributes(R.styleable.CalcDialog);
+        TypedArray ta = calcDialog.getContext().obtainStyledAttributes(R.styleable.CalcDialog);
         btnTexts = ta.getTextArray(R.styleable.CalcDialog_calcButtonTexts);
         errorMessages = ta.getTextArray(R.styleable.CalcDialog_calcErrors);
         maxDialogDimensions = new int[]{
@@ -122,14 +109,6 @@ abstract class CalcDialogFragment extends Fragment {
     @Nullable
     @Override
     public abstract View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup root, @Nullable Bundle state);
-
-    public void onDismiss(DialogInterface dialog) {
-        //super.onDismiss(dialog);
-        if (presenter != null) {
-            // On config change, presenter is detached before this is called
-            presenter.onDismissed();
-        }
-    }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle state) {
@@ -144,7 +123,7 @@ abstract class CalcDialogFragment extends Fragment {
         presenter.detach();
 
         presenter = null;
-        context = null;
+        calcDialog = null;
     }
 
     @Nullable
@@ -179,10 +158,12 @@ abstract class CalcDialogFragment extends Fragment {
     }
 
     public Locale getDefaultLocale() {
-        return CalcDialogUtils.getDefaultLocale(context);
+        return CalcDialogUtils.getDefaultLocale(calcDialog.getContext());
     }
 
-    public abstract void exit();
+    public void exit(){
+        calcDialog.exit();
+    }
 
     public void sendValueResult(BigDecimal value) {
         CalcDialogCallback cb = getCallback();
@@ -208,15 +189,15 @@ abstract class CalcDialogFragment extends Fragment {
     }
 
     public void displayValueText(String text) {
-        //displayTxv.setText(text);
+        calcDialog.getDisplayTxv().setText(text);
     }
 
     public void displayErrorText(int error) {
-        //displayTxv.setText(errorMessages[error]);
+        calcDialog.getDisplayTxv().setText(errorMessages[error]);
     }
 
     public void displayAnswerText() {
-        //displayTxv.setText(R.string.calc_answer);
+        calcDialog.getDisplayTxv().setText(R.string.calc_answer);
     }
 
     ////////// CALCULATOR SETTINGS //////////
@@ -364,7 +345,7 @@ abstract class CalcDialogFragment extends Fragment {
          *              To format the value to a currency String you could do:
          *              {@code NumberFormat.getCurrencyInstance(Locale).format(BigDecimal)}
          * @param requestCode dialog request code given when dialog
-         *                    was created with {@link #newInstance(int)}
+         *                    was created with {@link #newInstance(CalcDialog, int)}
          */
         void onValueEntered(int requestCode, BigDecimal value);
     }
