@@ -124,11 +124,11 @@ public class MainActivity extends AppCompatActivity implements CalcDialog.CalcDi
 
                 String maxIntStr = maxIntEdt.getText().toString();
                 int maxInt = maxIntChk.isChecked() && !maxIntStr.isEmpty() ?
-                        Integer.valueOf(maxIntStr) : CalcDialog.MAX_DIGITS_UNLIMITED;
+                        Integer.valueOf(maxIntStr) : CalcDialogStandard.MAX_DIGITS_UNLIMITED;
 
                 String maxFracStr = maxFracEdt.getText().toString();
                 int maxFrac = maxFracChk.isChecked() && !maxFracStr.isEmpty() ?
-                        Integer.valueOf(maxFracStr) : CalcDialog.MAX_DIGITS_UNLIMITED;
+                        Integer.valueOf(maxFracStr) : CalcDialogStandard.MAX_DIGITS_UNLIMITED;
 
                 // Set settings and value
                 calcDialog.setValue(value)

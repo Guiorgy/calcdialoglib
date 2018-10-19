@@ -58,7 +58,6 @@ abstract class CalcDialogFragment extends Fragment {
 
     protected CalcSettings settings;
 
-    protected TextView displayTxv;
     protected TextView decimalSepBtn;
     protected TextView equalBtn;
     protected TextView answerBtn;
@@ -137,8 +136,6 @@ abstract class CalcDialogFragment extends Fragment {
         super.onSaveInstanceState(state);
         presenter.writeStateToBundle(state);
         settings.writeToBundle(state);
-
-        state.putString("displayText", displayTxv.getText().toString());
     }
 
     @Override
@@ -211,15 +208,15 @@ abstract class CalcDialogFragment extends Fragment {
     }
 
     public void displayValueText(String text) {
-        displayTxv.setText(text);
+        //displayTxv.setText(text);
     }
 
     public void displayErrorText(int error) {
-        displayTxv.setText(errorMessages[error]);
+        //displayTxv.setText(errorMessages[error]);
     }
 
     public void displayAnswerText() {
-        displayTxv.setText(R.string.calc_answer);
+        //displayTxv.setText(R.string.calc_answer);
     }
 
     ////////// CALCULATOR SETTINGS //////////

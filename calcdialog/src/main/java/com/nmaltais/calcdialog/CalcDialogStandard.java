@@ -21,26 +21,15 @@
 
 package com.nmaltais.calcdialog;
 
-import android.app.Dialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.view.ContextThemeWrapper;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -70,37 +59,9 @@ public class CalcDialogStandard extends CalcDialogFragment {
         final View view = inflater.inflate(R.layout.dialog_calc_standard, root, false);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            LinearLayout header = view.findViewById(R.id.calc_layout_header);
+            LinearLayout header = view.findViewById(R.id.calc_layout_root);
             header.setBackgroundResource(R.drawable.calc_bg_elevation);
         }
-
-        // Value display
-        displayTxv = view.findViewById(R.id.calc_txv_value);
-        displayTxv.setOnLongClickListener(new View.OnLongClickListener(){
-            @Override
-            public boolean onLongClick(final View v){
-                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("calc result", displayTxv.getText());
-                assert clipboard != null;
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(context, clip.getItemAt(0).getText() + " has been copied to clipboard", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
-
-        // Erase button
-        CalcEraseButton eraseBtn = view.findViewById(R.id.calc_btn_erase);
-        eraseBtn.setOnEraseListener(new CalcEraseButton.EraseListener() {
-            @Override
-            public void onErase() {
-                presenter.onErasedOnce();
-            }
-
-            @Override
-            public void onEraseAll() {
-                presenter.onErasedAll();
-            }
-        });
 
         // Digit buttons
         for (int i = 0; i < 10; i++) {
@@ -168,38 +129,13 @@ public class CalcDialogStandard extends CalcDialogFragment {
             }
         });
 
-        // Dialog buttons
-        Button clearBtn = view.findViewById(R.id.calc_btn_clear);
-        clearBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                presenter.onClearBtnClicked();
-            }
-        });
-
-        Button cancelBtn = view.findViewById(R.id.calc_btn_cancel);
-        cancelBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                presenter.onCancelBtnClicked();
-            }
-        });
-
-        Button okBtn = view.findViewById(R.id.calc_btn_ok);
-        okBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                presenter.onOkBtnClicked();
-            }
-        });
-
         // Presenter
         presenter = new CalcPresenter();
         presenter.attach(CalcDialogStandard.this, state);
 
         if (state != null) {
             settings.readFromBundle(state);
-            displayTxv.setText(state.getString("displayText"));
+            //displayTxv.setText(state.getString("displayText"));
         }
 
         return view;

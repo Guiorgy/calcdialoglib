@@ -47,10 +47,10 @@ public class CalcPresenter {
         // Get locale's symbols for number formatting
         Locale locale = fragment.getDefaultLocale();
         DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(locale);
-        if (settings.decimalSep == CalcDialog.FORMAT_CHAR_DEFAULT) {
+        if (settings.decimalSep == CalcDialogFragment.FORMAT_CHAR_DEFAULT) {
             settings.decimalSep = dfs.getDecimalSeparator();
         }
-        if (settings.groupSep == CalcDialog.FORMAT_CHAR_DEFAULT) {
+        if (settings.groupSep == CalcDialogFragment.FORMAT_CHAR_DEFAULT) {
             settings.groupSep = dfs.getGroupingSeparator();
         }
 
@@ -187,10 +187,10 @@ public class CalcPresenter {
 
         // Check if max digits has been exceeded
         int pointPos = valueStr.indexOf(String.valueOf(settings.decimalSep));
-        boolean withinMaxInt = (pointPos == -1 && (settings.maxIntDigits == CalcDialog.MAX_DIGITS_UNLIMITED
+        boolean withinMaxInt = (pointPos == -1 && (settings.maxIntDigits == CalcDialogFragment.MAX_DIGITS_UNLIMITED
                 || valueStr.length() < settings.maxIntDigits));
         boolean withinMaxFrac = (pointPos != -1
-                && (settings.maxFracDigits == CalcDialog.MAX_DIGITS_UNLIMITED
+                && (settings.maxFracDigits == CalcDialogFragment.MAX_DIGITS_UNLIMITED
                 || valueStr.length() - pointPos - 1 < settings.maxFracDigits));
         boolean isValueZero = (pointPos == -1 && valueStr.length() == 1 && valueStr.charAt(0) == '0');
 

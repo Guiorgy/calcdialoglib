@@ -23,13 +23,17 @@ package com.nmaltais.calcdialog;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
@@ -37,7 +41,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -53,57 +60,19 @@ public class CalcDialog extends AppCompatDialogFragment {
 
     private static final String TAG = CalcDialog.class.getSimpleName();
 
-    /**
-     * Parameter value to set for {@link #setMaxDigits(int, int)}
-     * to have to limit on the number of digits for a part of the number (int or frac).
-     */
-    public static final int MAX_DIGITS_UNLIMITED = -1;
-
-    /**
-     * Parameter to set for {@link #setFormatSymbols(char, char)}
-     * to use default locale's format symbol.
-     * This is the default value for both decimal and group separators
-     */
-    public static final char FORMAT_CHAR_DEFAULT = 0;
-
-    private static final int[] DIGIT_BTN_IDS = {
-            R.id.calc_btn_0,
-            R.id.calc_btn_1,
-            R.id.calc_btn_2,
-            R.id.calc_btn_3,
-            R.id.calc_btn_4,
-            R.id.calc_btn_5,
-            R.id.calc_btn_6,
-            R.id.calc_btn_7,
-            R.id.calc_btn_8,
-            R.id.calc_btn_9,
-    };
-
-    private static final int[] OPERATOR_BTN_IDS = {
-            R.id.calc_btn_add,
-            R.id.calc_btn_sub,
-            R.id.calc_btn_mult,
-            R.id.calc_btn_div,
-    };
-
     private Context context;
     private CalcPresenter presenter;
 
     private CalcSettings settings;
+
+    protected TextView displayTxv;
 
     private List<CalcDialogFragment> fragments;
     private CalcDialogViewPager viewPager;
     private CalcDialogAdapter adapter;
     private View calcDialog;
 
-    private TextView displayTxv;
-    private TextView decimalSepBtn;
-    private TextView equalBtn;
-    private TextView answerBtn;
-    private TextView signBtn;
-
-    private CharSequence[] btnTexts;
-    private CharSequence[] errorMessages;
+    protected CharSequence[] errorMessages;
     private int[] maxDialogDimensions;
 
     /**
@@ -144,7 +113,6 @@ public class CalcDialog extends AppCompatDialogFragment {
 
         // Get strings
         TypedArray ta = context.obtainStyledAttributes(R.styleable.CalcDialog);
-        btnTexts = ta.getTextArray(R.styleable.CalcDialog_calcButtonTexts);
         errorMessages = ta.getTextArray(R.styleable.CalcDialog_calcErrors);
         maxDialogDimensions = new int[]{
                 ta.getDimensionPixelSize(R.styleable.CalcDialog_calcDialogMaxWidth, -1),
@@ -159,7 +127,65 @@ public class CalcDialog extends AppCompatDialogFragment {
         LayoutInflater inflater = LayoutInflater.from(context);
         calcDialog = calcDialog != null ? calcDialog : inflater.inflate(R.layout.dialog_calc, null);
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            LinearLayout header = calcDialog.findViewById(R.id.calc_layout_header);
+            header.setBackgroundResource(R.drawable.calc_bg_elevation);
+        }
+
         viewPager = (CalcDialogViewPager) calcDialog.findViewById(R.id.calc_viewpager);
+
+        // Value display
+        displayTxv = calcDialog.findViewById(R.id.calc_txv_value);
+        displayTxv.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(final View v){
+                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("calc result", displayTxv.getText());
+                assert clipboard != null;
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(context, clip.getItemAt(0).getText() + " has been copied to clipboard", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
+        // Erase button
+        CalcEraseButton eraseBtn = calcDialog.findViewById(R.id.calc_btn_erase);
+        eraseBtn.setOnEraseListener(new CalcEraseButton.EraseListener() {
+            @Override
+            public void onErase() {
+                presenter.onErasedOnce();
+            }
+
+            @Override
+            public void onEraseAll() {
+                presenter.onErasedAll();
+            }
+        });
+
+        // Dialog buttons
+        Button clearBtn = calcDialog.findViewById(R.id.calc_btn_clear);
+        clearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.onClearBtnClicked();
+            }
+        });
+
+        Button cancelBtn = calcDialog.findViewById(R.id.calc_btn_cancel);
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.onCancelBtnClicked();
+            }
+        });
+
+        Button okBtn = calcDialog.findViewById(R.id.calc_btn_ok);
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.onOkBtnClicked();
+            }
+        });
 
         // Set up dialog
         final Dialog dialog = new Dialog(context);
@@ -192,6 +218,10 @@ public class CalcDialog extends AppCompatDialogFragment {
 
         if (state != null) {
             settings.readFromBundle(state);
+        }
+
+        if (state != null) {
+            settings.readFromBundle(state);
             displayTxv.setText(state.getString("displayText"));
         }
 
@@ -210,6 +240,10 @@ public class CalcDialog extends AppCompatDialogFragment {
         adapter = new CalcDialogAdapter(getChildFragmentManager());
         adapter.setFragments(fragments);
         viewPager.setAdapter(adapter);
+
+
+        TabLayout tabLayout = (TabLayout) calcDialog.findViewById(R.id.calc_viewpager_tabs);
+        tabLayout.setupWithViewPager(viewPager, true);
 
         return calcDialog;
     }
@@ -288,31 +322,15 @@ public class CalcDialog extends AppCompatDialogFragment {
         }
     }
 
-    void setAnswerBtnVisible(boolean visible) {
-        answerBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    void setEqualBtnVisible(boolean visible) {
-        equalBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    void setSignBtnVisible(boolean visible) {
-        signBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    void setDecimalSepBtnEnabled(boolean enabled) {
-        decimalSepBtn.setEnabled(enabled);
-    }
-
-    void displayValueText(String text) {
+    public void displayValueText(String text) {
         displayTxv.setText(text);
     }
 
-    void displayErrorText(int error) {
+    public void displayErrorText(int error) {
         displayTxv.setText(errorMessages[error]);
     }
 
-    void displayAnswerText() {
+    public void displayAnswerText() {
         displayTxv.setText(R.string.calc_answer);
     }
 
@@ -344,7 +362,7 @@ public class CalcDialog extends AppCompatDialogFragment {
 
     /**
      * Set max digits that can be entered on the calculator
-     * Use {@link #MAX_DIGITS_UNLIMITED} for no limit
+     * Use {@link CalcDialogFragment#MAX_DIGITS_UNLIMITED} for no limit
      * @param intPart Max digits for the integer part
      * @param fracPart Max digits for the fractional part.
      *                 A value of 0 means the value can't have a fractional part
@@ -384,7 +402,7 @@ public class CalcDialog extends AppCompatDialogFragment {
 
     /**
      * Set symbols for formatting number
-     * Use {@link #FORMAT_CHAR_DEFAULT} to use device locale's default symbol
+     * Use {@link CalcDialogFragment#FORMAT_CHAR_DEFAULT} to use device locale's default symbol
      * By default, formatting will use locale's symbols
      * @param decimalSep decimal separator
      * @param groupSep grouping separator

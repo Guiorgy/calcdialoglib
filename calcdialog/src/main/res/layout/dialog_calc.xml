@@ -1,29 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:background="?attr/calcBackgroundColor"
     tools:theme="@style/CalcDialogStyle"
-    android:id="@+id/calc_root"
-    >
+    android:id="@+id/calc_root">
 
-    <com.nmaltais.calcdialog.CalcDialogViewPager
+    <android.support.design.widget.TabLayout
+        android:id="@+id/calc_viewpager_tabs"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:clipToPadding="false"
+        app:tabIndicatorHeight="1dp"
+        app:tabPaddingTop="0dp"
+        app:tabPaddingBottom="0dp"
+        app:tabPaddingStart="5dp"
+        app:tabPaddingEnd="5dp"
+        app:tabMode="fixed"
+        app:tabTextAppearance="@style/tmp_text"
+        app:tabSelectedTextColor="#ff000000"
+        app:tabTextColor="#60000000"
+        tools:theme="@style/Widget.Design.TabLayout"
+        />
+
+    <LinearLayout
+        android:id="@+id/calc_layout_header"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/calc_viewpager"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="?attr/calcBackgroundColor"
+        android:elevation="2dp"
         >
 
-        <android.support.v4.view.PagerTabStrip
-            android:id="@+id/calc_viewpager_header"
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/calc_txv_value"
+            style="?attr/calcValueStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:paddingBottom="4dp"
-            android:paddingTop="4dp"
+            android:layout_height="?attr/calcHeaderHeight"
+            android:layout_weight="1"
+            tools:text="-1,234.56"
             />
 
-    </com.nmaltais.calcdialog.CalcDialogViewPager>
+        <com.nmaltais.calcdialog.CalcEraseButton
+            android:id="@+id/calc_btn_erase"
+            style="?attr/calcEraseBtnStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            tools:ignore="ContentDescription"
+            />
+
+    </LinearLayout>
+
+    <com.nmaltais.calcdialog.CalcDialogViewPager
+        android:id="@+id/calc_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
+    <LinearLayout
+        android:id="@+id/calc_dialog_btn_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <Button
+            android:id="@+id/calc_btn_clear"
+            style="@style/CalcDialogButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="?attr/calcButtonTextClear"
+            />
+
+        <Space
+            android:id="@+id/calc_dialog_btn_space"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            />
+
+        <Button
+            android:id="@+id/calc_btn_cancel"
+            style="@style/CalcDialogButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:text="?attr/calcButtonTextCancel"
+            />
+
+        <Button
+            android:id="@+id/calc_btn_ok"
+            style="@style/CalcDialogButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:text="?attr/calcButtonTextOk"
+            />
+
+    </LinearLayout>
 
 </LinearLayout>

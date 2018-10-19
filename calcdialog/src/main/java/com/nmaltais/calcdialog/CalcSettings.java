@@ -38,8 +38,8 @@ class CalcSettings {
         maxFracDigits = 8;
         roundingMode = RoundingMode.HALF_UP;
 
-        decimalSep = CalcDialog.FORMAT_CHAR_DEFAULT;
-        groupSep = CalcDialog.FORMAT_CHAR_DEFAULT;
+        decimalSep = CalcDialogFragment.FORMAT_CHAR_DEFAULT;
+        groupSep = CalcDialogFragment.FORMAT_CHAR_DEFAULT;
         groupSize = 3;
 
         signCanBeChanged = true;
@@ -110,8 +110,8 @@ class CalcSettings {
     }
 
     void setMaxDigits(int intPart, int fracPart) {
-        if (intPart != CalcDialog.MAX_DIGITS_UNLIMITED && intPart < 1 ||
-                fracPart != CalcDialog.MAX_DIGITS_UNLIMITED && fracPart < 0) {
+        if (intPart != CalcDialogFragment.MAX_DIGITS_UNLIMITED && intPart < 1 ||
+                fracPart != CalcDialogFragment.MAX_DIGITS_UNLIMITED && fracPart < 0) {
             throw new IllegalArgumentException("Max integer part must be at least 1 and max fractional part must be at least 0.");
         }
 
@@ -138,7 +138,7 @@ class CalcSettings {
     }
 
     void setFormatSymbols(char decimalSep, char groupSep) {
-        if (decimalSep != CalcDialog.FORMAT_CHAR_DEFAULT && decimalSep == groupSep) {
+        if (decimalSep != CalcDialogFragment.FORMAT_CHAR_DEFAULT && decimalSep == groupSep) {
             throw new IllegalArgumentException("Decimal separator cannot be the same as grouping separator.");
         }
 

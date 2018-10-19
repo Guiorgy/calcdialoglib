@@ -86,4 +86,9 @@
         <!-- Nothing -->
     </style>
 
+    <style name="tmp_text" parent="TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
 </resources>
