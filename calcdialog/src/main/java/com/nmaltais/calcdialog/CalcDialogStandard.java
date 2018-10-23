@@ -43,9 +43,12 @@ public class CalcDialogStandard extends CalcDialogFragment {
         return "Standard";
     }
 
+    public CalcDialogStandard(){
+    }
+
     public static CalcDialogStandard newInstance(CalcDialog calcDialog, int requestCode){
         CalcDialogStandard fragment = new CalcDialogStandard();
-        fragment.instantiate(requestCode);
+        fragment.initialize(requestCode);
         fragment.calcDialog = calcDialog;
         return fragment;
     }
@@ -128,7 +131,7 @@ public class CalcDialogStandard extends CalcDialogFragment {
         });
 
         // Presenter
-        presenter = new CalcPresenterStandard();
+        //presenter = new CalcPresenterStandard(); todo
         presenter.attach(CalcDialogStandard.this, state);
 
         if (state != null) {

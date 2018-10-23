@@ -1,6 +1,5 @@
 package com.nmaltais.calcdialog;
 
-import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -70,24 +69,14 @@ abstract class CalcDialogFragment extends Fragment {
 
     /**
      * Do not use the constructor directly for creating
-     * an instance, use {@link #newInstance(CalcDialog, int)} instead
+     * an instance, use {@link #initialize(int)} instead
      */
     protected CalcDialogFragment() {
+    }
+
+    protected void initialize(int requestCode){
         settings = new CalcSettings();
-    }
-
-    protected void instantiate(int requestCode){
         this.settings.requestCode = requestCode;
-    }
-
-    /**
-     * Create a new instance of CalcDialog
-     * @param requestCode request code used by callback
-     *                    Useful in case there's multiple dialogs at the same time
-     * @return the dialog
-     */
-    public static CalcDialogFragment newInstance(CalcDialog calcDialog, int requestCode){
-        return null;
     }
 
     ////////// LIFECYCLE METHODS //////////
@@ -345,7 +334,7 @@ abstract class CalcDialogFragment extends Fragment {
          *              To format the value to a currency String you could do:
          *              {@code NumberFormat.getCurrencyInstance(Locale).format(BigDecimal)}
          * @param requestCode dialog request code given when dialog
-         *                    was created with {@link #newInstance(CalcDialog, int)}
+         *                    was created with {@link #initialize(int)}}
          */
         void onValueEntered(int requestCode, BigDecimal value);
     }

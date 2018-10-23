@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-abstract class CalcPresenter{
+class CalcPresenter implements CalcPresenterStandard, CalcPresenterScientific{
     private static final int OPERATION_NONE = -1;
     private static final int OPERATION_ADD = 0;
     private static final int OPERATION_SUB = 1;
@@ -518,5 +518,4 @@ abstract class CalcPresenter{
         fragment.setAnswerBtnVisible(visible);
         fragment.setEqualBtnVisible(!visible);
     }
-
 }
