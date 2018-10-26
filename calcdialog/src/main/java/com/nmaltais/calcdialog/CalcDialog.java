@@ -60,7 +60,22 @@ public class CalcDialog extends AppCompatDialogFragment {
 
     private static final String TAG = CalcDialog.class.getSimpleName();
 
+    /**
+     * Parameter value to set for {@link #setMaxDigits(int, int)}
+     * to have to limit on the number of digits for a part of the number (int or frac).
+     */
+    public static final int MAX_DIGITS_UNLIMITED = -1;
+
+    /**
+     * Parameter to set for {@link #setFormatSymbols(char, char)}
+     * to use default locale's format symbol.
+     * This is the default value for both decimal and group separators
+     */
+    public static final char FORMAT_CHAR_DEFAULT = 0;
+
+
     private Context context;
+    private CalcPresenter presenter;
 
     private CalcSettings settings;
 
@@ -152,12 +167,12 @@ public class CalcDialog extends AppCompatDialogFragment {
         eraseBtn.setOnEraseListener(new CalcEraseButton.EraseListener() {
             @Override
             public void onErase() {
-                getPresenter().onErasedOnce();
+                presenter.onErasedOnce();
             }
 
             @Override
             public void onEraseAll() {
-                getPresenter().onErasedAll();
+                presenter.onErasedAll();
             }
         });
 
@@ -166,7 +181,7 @@ public class CalcDialog extends AppCompatDialogFragment {
         clearBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getPresenter().onClearBtnClicked();
+                presenter.onClearBtnClicked();
             }
         });
 
@@ -174,7 +189,7 @@ public class CalcDialog extends AppCompatDialogFragment {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getPresenter().onCancelBtnClicked();
+                presenter.onCancelBtnClicked();
             }
         });
 
@@ -182,7 +197,7 @@ public class CalcDialog extends AppCompatDialogFragment {
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getPresenter().onOkBtnClicked();
+                presenter.onOkBtnClicked();
             }
         });
 
@@ -208,10 +223,9 @@ public class CalcDialog extends AppCompatDialogFragment {
                 // Set dialog's content
                 calcDialog.setLayoutParams(new ViewGroup.LayoutParams(width, height));
                 dialog.setContentView(calcDialog);
-
                 // Presenter
-                //presenter = new CalcPresenterStandard();
-                //presenter.attach(CalcDialog.this, state);
+                presenter = new CalcPresenter();
+                presenter.attach(CalcDialog.this, state);
             }
         });
 
@@ -233,8 +247,8 @@ public class CalcDialog extends AppCompatDialogFragment {
         calcDialog = calcDialog != null ? calcDialog : inflater.inflate(R.layout.dialog_calc, container, false);
 
         fragments = new ArrayList<CalcDialogFragment>(){{
-            add(CalcDialogStandard.newInstance(CalcDialog.this, 0));
-            add(CalcDialogStandard.newInstance(CalcDialog.this, 1));
+            add(CalcDialogStandard.newInstance(CalcDialog.this));
+            add(CalcDialogStandard.newInstance(CalcDialog.this));
         }};
         adapter = new CalcDialogAdapter(getChildFragmentManager());
         adapter.setFragments(fragments);
@@ -249,16 +263,16 @@ public class CalcDialog extends AppCompatDialogFragment {
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (getPresenter() != null) {
+        if (presenter != null) {
             // On config change, presenter is detached before this is called
-            getPresenter().onDismissed();
+            presenter.onDismissed();
         }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle state) {
+    public void onSaveInstanceState(@NonNull Bundle state) {
         super.onSaveInstanceState(state);
-        getPresenter().writeStateToBundle(state);
+        presenter.writeStateToBundle(state);
         settings.writeToBundle(state);
 
         state.putString("displayText", displayTxv.getText().toString());
@@ -267,9 +281,9 @@ public class CalcDialog extends AppCompatDialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        /*getPresenter().detach();
+        presenter.detach();
 
-        presenter = null;*/
+        presenter = null;
         context = null;
         calcDialog = null;
     }
@@ -324,6 +338,30 @@ public class CalcDialog extends AppCompatDialogFragment {
         displayTxv.setText(R.string.calc_answer);
     }
 
+    public void setAnswerBtnVisible(boolean visible) {
+        for(CalcDialogFragment fragment : fragments){
+            fragment.answerBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    public void setEqualBtnVisible(boolean visible) {
+        for(CalcDialogFragment fragment : fragments){
+            fragment.equalBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    public void setSignBtnVisible(boolean visible) {
+        for(CalcDialogFragment fragment : fragments){
+            fragment.signBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    public void setDecimalSepBtnEnabled(boolean enabled) {
+        for(CalcDialogFragment fragment : fragments){
+            fragment.decimalSepBtn.setEnabled(enabled);
+        }
+    }
+
     ////////// GETTERS //////////
     @NonNull
     @Override
@@ -332,7 +370,7 @@ public class CalcDialog extends AppCompatDialogFragment {
     }
 
     CalcPresenter getPresenter(){
-        return fragments.get(viewPager.getCurrentItem()).presenter;
+        return presenter;
     }
 
     CalcSettings getSettings() {
@@ -383,7 +421,7 @@ public class CalcDialog extends AppCompatDialogFragment {
 
     /**
      * Set max digits that can be entered on the calculator
-     * Use {@link CalcDialogFragment#MAX_DIGITS_UNLIMITED} for no limit
+     * Use {@link #MAX_DIGITS_UNLIMITED} for no limit
      * @param intPart Max digits for the integer part
      * @param fracPart Max digits for the fractional part.
      *                 A value of 0 means the value can't have a fractional part
@@ -423,7 +461,7 @@ public class CalcDialog extends AppCompatDialogFragment {
 
     /**
      * Set symbols for formatting number
-     * Use {@link CalcDialogFragment#FORMAT_CHAR_DEFAULT} to use device locale's default symbol
+     * Use {@link #FORMAT_CHAR_DEFAULT} to use device locale's default symbol
      * By default, formatting will use locale's symbols
      * @param decimalSep decimal separator
      * @param groupSep grouping separator

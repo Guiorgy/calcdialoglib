@@ -43,14 +43,17 @@ public class CalcDialogStandard extends CalcDialogFragment {
         return "Standard";
     }
 
-    public CalcDialogStandard(){
-    }
+    /**
+     * Do not use the constructor directly for creating
+     * an instance, use {@link #newInstance(CalcDialog)} instead
+     */
+    public CalcDialogStandard() { }
 
-    public static CalcDialogStandard newInstance(CalcDialog calcDialog, int requestCode){
-        CalcDialogStandard fragment = new CalcDialogStandard();
-        fragment.initialize(requestCode);
-        fragment.calcDialog = calcDialog;
-        return fragment;
+    static CalcDialogStandard newInstance(CalcDialog calcDialog){
+        CalcDialogStandard calcDialogStandard = new CalcDialogStandard();
+        calcDialogStandard.calcDialog = calcDialog;
+
+        return calcDialogStandard;
     }
 
     ////////// LIFECYCLE METHODS //////////
@@ -73,7 +76,7 @@ public class CalcDialogStandard extends CalcDialogFragment {
             digitBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    presenter.onDigitBtnClicked(digit);
+                    getPresenter().onDigitBtnClicked(digit);
                 }
             });
         }
@@ -86,7 +89,7 @@ public class CalcDialogStandard extends CalcDialogFragment {
             operatorBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    presenter.onOperatorBtnClicked(op);
+                    getPresenter().onOperatorBtnClicked(op);
                 }
             });
         }
@@ -97,7 +100,7 @@ public class CalcDialogStandard extends CalcDialogFragment {
         decimalSepBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.onDecimalSepBtnClicked();
+                getPresenter().onDecimalSepBtnClicked();
             }
         });
 
@@ -107,7 +110,7 @@ public class CalcDialogStandard extends CalcDialogFragment {
         signBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.onSignBtnClicked();
+                getPresenter().onSignBtnClicked();
             }
         });
 
@@ -117,7 +120,7 @@ public class CalcDialogStandard extends CalcDialogFragment {
         equalBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.onEqualBtnClicked();
+                getPresenter().onEqualBtnClicked();
             }
         });
 
@@ -126,18 +129,9 @@ public class CalcDialogStandard extends CalcDialogFragment {
         answerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.onAnswerBtnClicked();
+                getPresenter().onAnswerBtnClicked();
             }
         });
-
-        // Presenter
-        //presenter = new CalcPresenterStandard(); todo
-        presenter.attach(CalcDialogStandard.this, state);
-
-        if (state != null) {
-            settings.readFromBundle(state);
-            //displayTxv.setText(state.getString("displayText"));
-        }
 
         return view;
     }

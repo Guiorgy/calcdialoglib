@@ -104,13 +104,13 @@ class MainActivityKT : AppCompatActivity(), CalcDialog.CalcDialogCallback {
             val maxInt = if (maxIntChk.isChecked && !maxIntStr.isEmpty())
                 Integer.valueOf(maxIntStr)
             else
-                CalcDialogStandard.MAX_DIGITS_UNLIMITED
+                CalcDialog.MAX_DIGITS_UNLIMITED
 
             val maxFracStr = maxFracEdt.text.toString()
             val maxFrac = if (maxFracChk.isChecked && !maxFracStr.isEmpty())
                 Integer.valueOf(maxFracStr)
             else
-                CalcDialogStandard.MAX_DIGITS_UNLIMITED
+                CalcDialog.MAX_DIGITS_UNLIMITED
 
             // Set settings and value
             calcDialog.setValue(value)
