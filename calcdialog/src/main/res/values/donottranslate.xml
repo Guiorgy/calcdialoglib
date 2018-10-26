@@ -12,13 +12,38 @@
         <item>7</item>
         <item>8</item>
         <item>9</item>
+        <item>±</item>
+        <item>.</item>
+        <item>=</item>
         <item>+</item>
         <item>-</item>
         <item>×</item>
         <item>÷</item>
-        <item>±</item>
-        <item>.</item>
-        <item>=</item>
+        <item>)</item>
+        <item>(</item>
+        <item>n!</item>
+        <item>π</item>
+        <item>↑</item>
+        <item>x²</item>
+        <item>xʸ</item>
+        <item>sin</item>
+        <item>cos</item>
+        <item>tan</item>
+        <item>√</item>
+        <item>10ˣ</item>
+        <item>log</item>
+        <item>Exp</item>
+        <item>Mod</item>
+        <item>x³</item>
+        <item>ʸ√x</item>
+        <item>sin⁻¹</item>
+        <item>cos⁻¹</item>
+        <item>tan⁻¹</item>
+        <item>⅟ₓ</item>
+        <item>eˣ</item>
+        <item>NaN</item>
+        <item>NaN</item>
+        <item>NaN</item>
     </string-array>
 
 </resources>

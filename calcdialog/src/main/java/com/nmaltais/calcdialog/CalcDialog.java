@@ -248,7 +248,7 @@ public class CalcDialog extends AppCompatDialogFragment {
 
         fragments = new ArrayList<CalcDialogFragment>(){{
             add(CalcDialogStandard.newInstance(CalcDialog.this));
-            add(CalcDialogStandard.newInstance(CalcDialog.this));
+            add(CalcDialogScietific.newInstance(CalcDialog.this));
         }};
         adapter = new CalcDialogAdapter(getChildFragmentManager());
         adapter.setFragments(fragments);

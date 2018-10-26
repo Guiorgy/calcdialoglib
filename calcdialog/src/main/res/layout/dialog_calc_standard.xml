@@ -32,47 +32,15 @@
     android:id="@+id/calc_layout_root"
     >
 
-    <!--<LinearLayout
-        android:id="@+id/calc_layout_header"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="?attr/calcBackgroundColor"
-        android:elevation="2dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        >
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/calc_txv_value"
-            style="?attr/calcValueStyle"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/calcHeaderHeight"
-            android:layout_weight="1"
-            tools:text="-1,234.56"
-            />
-
-        <com.nmaltais.calcdialog.CalcEraseButton
-            android:id="@+id/calc_btn_erase"
-            style="?attr/calcEraseBtnStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="0"
-            tools:ignore="ContentDescription"
-            />
-
-    </LinearLayout>-->
-
     <View
         android:id="@+id/calc_view_number_bg"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="?attr/calcNumberBtnColor"
-        app:layout_constraintBottom_toTopOf="@+id/calc_view_sep_footer"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/calc_guideline_end"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/calc_layout_root"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <View
@@ -80,10 +48,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="?attr/calcOperationBtnColor"
-        app:layout_constraintBottom_toTopOf="@+id/calc_view_sep_footer"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/calc_guideline_end"
-        app:layout_constraintTop_toTopOf="@+id/calc_layout_root"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <TextView
@@ -186,7 +154,7 @@
         app:layout_constraintEnd_toStartOf="@+id/calc_guideline_start"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/calc_layout_root"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread_inside"
         tools:text="7"
         />
@@ -221,11 +189,12 @@
         style="?attr/calcNumberBtnStyle"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/calc_view_sep_footer"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/calc_btn_0"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calc_btn_1"
+        tools:textSize="32sp"
         tools:text="."
         />
 
@@ -277,6 +246,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/calc_guideline_end"
         app:layout_constraintTop_toBottomOf="@+id/calc_btn_mult"
+        tools:textSize="32sp"
         tools:text="-"
         />
 
@@ -298,7 +268,7 @@
         style="?attr/calcOperationBtnStyle"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/calc_view_sep_footer"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/calc_guideline_end"
@@ -324,59 +294,12 @@
         android:layout_width="0dp"
         android:layout_height="1px"
         android:background="?attr/calcDialogSepColor"
-        app:layout_constraintBottom_toBottomOf="@+id/calc_layout_root"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calc_btn_decimal"
         />
-
-    <!--<Button
-        android:id="@+id/calc_btn_clear"
-        style="@style/CalcDialogButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
-        android:text="?attr/calcButtonTextClear"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calc_view_sep_footer"
-        />
-
-    <Button
-        android:id="@+id/calc_btn_cancel"
-        style="@style/CalcDialogButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
-        android:text="?attr/calcButtonTextCancel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/calc_btn_ok"
-        app:layout_constraintTop_toBottomOf="@+id/calc_view_sep_footer"
-        app:layout_constraintVertical_bias="1.0"
-        />
-
-    <Button
-        android:id="@+id/calc_btn_ok"
-        style="@style/CalcDialogButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
-        android:text="?attr/calcButtonTextOk"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calc_view_sep_footer"
-        app:layout_constraintVertical_bias="0.0"
-        />-->
 
     <android.support.constraint.Guideline
         android:id="@+id/calc_guideline_start"

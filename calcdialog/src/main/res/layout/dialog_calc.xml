@@ -16,16 +16,18 @@
         android:paddingBottom="4dp"
         android:paddingTop="4dp"
         android:clipToPadding="false"
+        app:tabInlineLabel="true"
+        app:tabGravity="fill"
         app:tabIndicatorHeight="1dp"
         app:tabPaddingTop="0dp"
         app:tabPaddingBottom="0dp"
         app:tabPaddingStart="5dp"
         app:tabPaddingEnd="5dp"
-        app:tabMode="fixed"
+        app:tabMode="scrollable"
         app:tabTextAppearance="@style/tmp_text"
         app:tabSelectedTextColor="#ff000000"
         app:tabTextColor="#60000000"
-        tools:theme="@style/Widget.Design.TabLayout"
+        theme="@style/Widget.Design.TabLayout"
         />
 
     <LinearLayout
